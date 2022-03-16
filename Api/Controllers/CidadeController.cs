@@ -26,6 +26,13 @@ public class CidadeController : ControllerBase
         return !result.HasErro ? Ok(result) : NotFound(result);
     }
 
+    [HttpGet("{id}/pessoas")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResultPaginated<PessoaResponse>))]
+    public async Task<IActionResult> GetPessoas(int id, [FromQuery] PaginatedRequest paginatedRequest, CancellationToken cancellationToken)
+    {
+        return Ok(await _cidadeService.GetPessoas(id, paginatedRequest, cancellationToken));
+    }
+
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResultPaginated<CidadeResponse>))]
     public async Task<IActionResult> Get([FromQuery] PaginatedRequest paginatedRequest, CancellationToken cancellationToken)

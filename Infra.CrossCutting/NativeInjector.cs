@@ -50,5 +50,6 @@ public class NativeInjector
         }).CreateMapper());
 
         services.AddScoped<ICidadeService, CidadeService>();
+        services.AddScoped<IPessoaService, PessoaService>();
     }
 }

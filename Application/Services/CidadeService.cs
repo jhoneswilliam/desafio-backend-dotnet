@@ -25,14 +25,21 @@ public class CidadeService : ICidadeService
         var result = new Result<CidadeResponse>();
 
         if (string.IsNullOrEmpty(createCidadeRequest.Nome))
-            result.WithError("O campo nome é obrigatório!");
+            result.WithError("O campo Nome é obrigatório!");
+        if (string.IsNullOrEmpty(createCidadeRequest.UF))
+            result.WithError("O campo UF é obrigatório!");
+
         if (string.IsNullOrEmpty(createCidadeRequest.UF))
             result.WithError("O campo UF é obrigatório!");
 
         if (result.HasErro)
-        {
             return result;
-        }
+
+        if (createCidadeRequest.UF!.Length != 2)
+            result.WithError("O campo UF é invalido!");
+
+        if (result.HasErro)
+            return result;
 
         var cidade = _mapper.Map<Cidade>(createCidadeRequest);
         _repository.Add(cidade);
@@ -48,7 +55,7 @@ public class CidadeService : ICidadeService
 
         if (id == default)
         {
-            result.WithError("O campo id é obrigatório!");
+            result.WithError("O campo Id é obrigatório!");
             return result;
         }
 
@@ -93,14 +100,28 @@ public class CidadeService : ICidadeService
         return result;
     }
 
+    public async Task<ResultPaginated<PessoaResponse>> GetPessoas(int id, PaginatedRequest request, CancellationToken cancellationToken = default)
+    {
+        var result = new ResultPaginated<PessoaResponse>(request);
+        var query = _repository.GetAll<Pessoa>(@readonly: true)
+            .Where(x => x.Cidade!.Id == id);
+
+        result.TotalCount = query.Count();
+
+        var pessoas = await query.Paginate(request.Page, request.CountPerPage).ToListAsync(cancellationToken);
+        result.Data = _mapper.Map<IList<PessoaResponse>>(pessoas);
+
+        return result;
+    }
+
     public async Task<Result<CidadeResponse>> Update(UpdateCidadeRequest updateCidadeRequest, CancellationToken cancellationToken = default)
     {
         var result = new Result<CidadeResponse>();
 
         if (updateCidadeRequest.Id == default)
-            result.WithError("O campo id é obrigatório!");
+            result.WithError("O campo Id é obrigatório!");
         if (string.IsNullOrEmpty(updateCidadeRequest.Nome))
-            result.WithError("O campo nome é obrigatório!");
+            result.WithError("O campo Nome é obrigatório!");
         if (string.IsNullOrEmpty(updateCidadeRequest.UF))
             result.WithError("O campo UF é obrigatório!");
 
@@ -108,6 +129,12 @@ public class CidadeService : ICidadeService
         {
             return result;
         }
+
+        if (updateCidadeRequest.UF!.Length != 2)
+            result.WithError("O campo UF é invalido!");
+
+        if (result.HasErro)
+            return result;
 
         var cidade = await _repository.GetAsync<Cidade>(updateCidadeRequest.Id, cancellationToken);
         _mapper.Map(updateCidadeRequest, cidade);

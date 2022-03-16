@@ -16,6 +16,7 @@ public class PessoaConfiguration : IEntityTypeConfiguration<Pessoa>
         builder.Property(x => x.Idade).IsRequired();
 
         builder.HasOne(x => x.Cidade)
-            .WithMany(x => x.Pessoas);
+            .WithMany(x => x.Pessoas)
+            .IsRequired();
     }
 }
