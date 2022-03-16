@@ -14,9 +14,6 @@ builder.Services.AddSwaggerGen();
 NativeInjector.Setup(builder.Services, builder.Configuration);
 
 var app = builder.Build();
- 
-UnityOfWork dbcontext = (UnityOfWork)app.Services.GetRequiredService<IUnityOfWork>();
-dbcontext.Database.EnsureCreated();
 
 // Configure the HTTP request pipeline.
 app.Use(async (context, next) =>
