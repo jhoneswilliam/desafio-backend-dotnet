@@ -24,8 +24,9 @@ public class NativeInjector
     private static void RegisterRepositories(IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<IUnityOfWork, UnityOfWork>(options =>
-        {
-            options.UseSqlServer(configuration.GetConnectionString("Default"), b =>
+        {            
+            var connection = Environment.GetEnvironmentVariable("DBConnection") ?? configuration.GetConnectionString("Default"); 
+            options.UseSqlServer(connection, b =>
             {
                 b.MigrationsAssembly("Api");
             })

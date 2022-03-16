@@ -1,7 +1,8 @@
+using Domain.Interfaces.Data;
 using Infra.CrossCutting;
+using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -13,6 +14,9 @@ builder.Services.AddSwaggerGen();
 NativeInjector.Setup(builder.Services, builder.Configuration);
 
 var app = builder.Build();
+ 
+UnityOfWork dbcontext = (UnityOfWork)app.Services.GetRequiredService<IUnityOfWork>();
+dbcontext.Database.EnsureCreated();
 
 // Configure the HTTP request pipeline.
 app.Use(async (context, next) =>
@@ -39,3 +43,5 @@ app.UseCors(builder => builder
     .AllowCredentials());
 
 app.Run();
+
+

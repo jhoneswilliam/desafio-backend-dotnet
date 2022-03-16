@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+  example.api:
+    image: ${DOCKER_REGISTRY-}api
+    depends_on:
+      - sqldata
+    build:
+      context: .
+      dockerfile: Dockerfile      
+    environment:
+      "DBConnection": Data Source=sqldata,1433;Initial Catalog=master;Persist Security Info=True;User ID=sa;Password=pas@f4k3#
+    ports:
+      - "8080:80"
+
+  sqldata:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - SA_PASSWORD=pas@f4k3#
+      - ACCEPT_EULA=Y
+      - MSSQL_PID=Express
+    ports:
+      - "1433:5434"
